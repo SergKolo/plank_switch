@@ -12,7 +12,8 @@ def get_desk_files(onlydocked=True):
     desk_files = []
     global dock_obj    
     desk_files = list( dbus_ctrl.call_dbus_method(*dock_obj,"GetPersistentApplications",[]))
-    if not onlydocked :
+    if not onlydocked:
+        print("Not only docked")
         desk_files = desk_files + list(dbus_ctrl.call_dbus_method(*dock_obj,"GetTransientApplications",[]))
     return desk_files
 
@@ -20,10 +21,13 @@ def clear_dock(*args):
     """  Undocks all entries. Running appications will still 
          appear but won't be pinned"""
     global dock_obj
-    for desk_file in get_desk_files():
+    for desk_file in get_desk_files(onlydocked=False):
         dbus_ctrl.call_dbus_method(*dock_obj,"Remove",[desk_file])
 
-def fill_dock(desk_files):
+        # TODO: how to tell the main module that menu needs to be updated. 
+        # Perhaps a wrapper function in main module will do the trick
+
+def fill_dock(ignore,desk_files):
     """ Fills the dock with Entries as provided by desk_files list,
         in the order they appear on the list"""
     global dock_obj

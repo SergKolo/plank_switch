@@ -73,12 +73,34 @@ class DeepinDockSwitch(object):
                 self.app_menu.remove(item)
         self.app_menu = Gtk.Menu()
 
-        all_lists = config_ctrl.read_config_file()
 
+        def fill_dock_and_update(ignore,fill):
+             dock_ctrl.clear_dock()
+             dock_ctrl.fill_dock(None,fill)
+             self.make_menu()
+
+        def clear_and_update(ignore):
+             dock_ctrl.clear_dock()
+             self.make_menu()
+# Plank has peculiar behavior: if a program is already running, it won't move in the dock to be placed where it's supposed to be in user-defined list
+
+
+        all_lists = config_ctrl.read_config_file()
+        print(all_lists)
+        print(dock_ctrl.get_desk_files())
+        for list_label,desk_files in all_lists.items():
+            if sorted(desk_files) == sorted(list(dock_ctrl.get_desk_files(onlydocked=True))):
+                list_label = "\u2605 " + list_label
+            item_params = { 
+                "label": list_label,
+                "action": fill_dock_and_update,
+                "args": [desk_files]
+            }
+            menu_builder.add_menu_item(self.app_menu,**item_params)
          
         menu_builder.add_menu_item(self.app_menu,icon="add",label="Record Currently Docked",action=self.record_currently_docked,args=[])
 
-        menu_builder.add_menu_item(self.app_menu,icon="trash",label="Clear dock",action=dock_ctrl.clear_dock,args=[])
+        menu_builder.add_menu_item(self.app_menu,icon="trash",label="Clear dock",action=clear_and_update,args=[])
         menu_builder.build_base_menu(self.app_menu)
         self.app_menu.show_all()
         self.app.set_menu(self.app_menu)
