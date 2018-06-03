@@ -89,7 +89,7 @@ class DeepinDockSwitch(object):
         print(all_lists)
         print(dock_ctrl.get_desk_files())
         for list_label,desk_files in all_lists.items():
-            if sorted(desk_files) == sorted(list(dock_ctrl.get_desk_files(onlydocked=True))):
+            if set(desk_files) == set(list(dock_ctrl.get_desk_files(onlydocked=True))):
                 list_label = "\u2605 " + list_label
             item_params = { 
                 "label": list_label,
